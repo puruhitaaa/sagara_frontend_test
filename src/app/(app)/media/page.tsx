@@ -6,12 +6,12 @@ export default async function Media() {
   const { media } = await api.media.getMedia.query()
 
   return (
-    <main>
+    <div>
       <div className='flex justify-between'>
         <h1 className='font-semibold text-2xl my-2'>Media</h1>
         <NewMediaModal />
       </div>
       <MediaList media={media} />
-    </main>
+    </div>
   )
 }

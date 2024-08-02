@@ -1,17 +1,16 @@
-"use client";
-import UpdateNameCard from "./UpdateNameCard";
-import UpdateEmailCard from "./UpdateEmailCard";
-import { AuthSession } from "@/lib/auth/utils";
+"use client"
 
-export default function UserSettings({
-  session,
-}: {
-  session: AuthSession["session"];
-}) {
+import UpdateNameCard from "./UpdateNameCard"
+import UpdateEmailCard from "./UpdateEmailCard"
+import { useSession } from "@/providers/session"
+
+export default function UserSettings() {
+  const { user } = useSession()
+
   return (
     <>
-      <UpdateNameCard name={session?.user.name ?? ""} />
-      <UpdateEmailCard email={session?.user.email ?? ""} />
+      <UpdateNameCard name={user?.name ?? ""} />
+      <UpdateEmailCard email={user?.email ?? ""} />
     </>
-  );
+  )
 }

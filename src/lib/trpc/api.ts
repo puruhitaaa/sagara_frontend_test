@@ -1,23 +1,22 @@
-import "server-only";
+import "server-only"
 
-  //  import { getUserAuth } from "@/lib/auth/utils";
-import { appRouter } from "@/lib/server/routers/_app";
-import { env } from "@/lib/env.mjs";
-import { createTRPCContext } from "./context";
+import { appRouter } from "@/lib/server/routers/_app"
+import { env } from "@/lib/env.mjs"
+import { createTRPCContext } from "./context"
 
 import {
   createTRPCProxyClient,
   loggerLink,
   TRPCClientError,
-} from "@trpc/client";
-import { callProcedure } from "@trpc/server";
-import { type TRPCErrorResponse } from "@trpc/server/rpc";
-import { observable } from "@trpc/server/observable";
+} from "@trpc/client"
+import { callProcedure } from "@trpc/server"
+import { type TRPCErrorResponse } from "@trpc/server/rpc"
+import { observable } from "@trpc/server/observable"
 
-import { cache } from "react";
-import { cookies } from "next/headers";
+import { cache } from "react"
+import { cookies } from "next/headers"
 
-import SuperJSON from "superjson";
+import SuperJSON from "superjson"
 
 const createContext = cache(() => {
   return createTRPCContext({
@@ -25,8 +24,8 @@ const createContext = cache(() => {
       cookie: cookies().toString(),
       "x-trpc-source": "rsc",
     }),
-  });
-});
+  })
+})
 
 export const api = createTRPCProxyClient<typeof appRouter>({
   transformer: SuperJSON,
@@ -51,15 +50,15 @@ export const api = createTRPCProxyClient<typeof appRouter>({
                 rawInput: op.input,
                 ctx,
                 type: op.type,
-              });
+              })
             })
             .then((data) => {
-              observer.next({ result: { data } });
-              observer.complete();
+              observer.next({ result: { data } })
+              observer.complete()
             })
             .catch((cause: TRPCErrorResponse) => {
-              observer.error(TRPCClientError.from(cause));
-            });
+              observer.error(TRPCClientError.from(cause))
+            })
         }),
   ],
-});
+})

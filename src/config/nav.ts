@@ -5,6 +5,7 @@ import {
   Image,
   LayoutGrid,
   SunMoon,
+  UserCog2,
 } from "lucide-react"
 
 type DefaultLinks = {
@@ -15,7 +16,10 @@ type DefaultLinks = {
 export const defaultLinks: DefaultLinks[] = [
   {
     title: "Configuration",
-    links: [{ href: "/settings", title: "Theme", icon: SunMoon }],
+    links: [
+      { href: "/account", title: "Account", icon: UserCog2 },
+      { href: "/settings", title: "Theme", icon: SunMoon },
+    ],
   },
   {
     title: "Menu",
