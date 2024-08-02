@@ -1,5 +1,11 @@
 import { SidebarLink } from "@/components/SidebarItems"
-import { Building, GraduationCap, Image, LayoutGrid } from "lucide-react"
+import {
+  Building,
+  GraduationCap,
+  Image,
+  LayoutGrid,
+  SunMoon,
+} from "lucide-react"
 
 type DefaultLinks = {
   title: string
@@ -7,6 +13,10 @@ type DefaultLinks = {
 }
 
 export const defaultLinks: DefaultLinks[] = [
+  {
+    title: "Configuration",
+    links: [{ href: "/settings", title: "Theme", icon: SunMoon }],
+  },
   {
     title: "Menu",
     links: [

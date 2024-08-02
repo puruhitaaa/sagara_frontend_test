@@ -17,7 +17,7 @@ export default async function AppLayout({
           <Sidebar />
           <div className='w-full'>
             <Navbar />
-            <div className='flex-1 md:p-8 pt-2 p-8 overflow-y-auto bg-brand-background h-full'>
+            <div className='flex-1 md:p-8 pt-2 p-8 overflow-y-auto bg-brand-background h-full dark:bg-background'>
               {children}
             </div>
           </div>

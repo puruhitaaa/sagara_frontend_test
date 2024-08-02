@@ -16,7 +16,7 @@ export interface SidebarLink {
 
 const SidebarItems = () => {
   return (
-    <>
+    <div className='divide-y divide-border'>
       {defaultLinks.length > 0
         ? defaultLinks.map((l) => (
             <SidebarLinkGroup
@@ -27,7 +27,7 @@ const SidebarItems = () => {
             />
           ))
         : null}
-    </>
+    </div>
   )
 }
 export default SidebarItems
@@ -45,7 +45,11 @@ const SidebarLinkGroup = ({
   const pathname = "/" + fullPathname.split("/")[1]
 
   return (
-    <div className={border ? "my-8 pt-4" : ""}>
+    <div
+      className={
+        border ? "[&:not(:first-child)]:pt-4 [&:not(:first-child)]:my-8" : ""
+      }
+    >
       {title ? (
         <h4 className='px-2 mb-2 text-sm uppercase text-muted-foreground tracking-wider'>
           {title}
