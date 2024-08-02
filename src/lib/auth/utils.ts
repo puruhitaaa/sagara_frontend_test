@@ -1,10 +1,10 @@
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
-import { type Cookie } from 'lucia'
+import { type Cookie } from "lucia"
 
-import { validateRequest } from './lucia'
-import { UsernameAndPassword, authenticationSchema } from '../db/schema/auth'
+import { validateRequest } from "./lucia"
+import { UsernameAndPassword, authenticationSchema } from "../db/schema/auth"
 
 export type AuthSession = {
   session: {
@@ -13,6 +13,7 @@ export type AuthSession = {
       name?: string
       email?: string
       username?: string
+      role?: string
     }
   } | null
 }
@@ -25,6 +26,7 @@ export const getUserAuth = async (): Promise<AuthSession> => {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     },
   }
@@ -32,20 +34,26 @@ export const getUserAuth = async (): Promise<AuthSession> => {
 
 export const checkAuth = async () => {
   const { session } = await validateRequest()
-  if (!session) redirect('/sign-in')
+  if (!session) redirect("/sign-in")
 }
 
-export const genericError = { error: 'Error, please try again.' }
+export const withAuthRole = async (role: string) => {
+  const { session, user } = await validateRequest()
+  if (!session) redirect("/sign-in")
+  if (user.role !== role) redirect("/")
+}
+
+export const genericError = { error: "Error, please try again." }
 
 export const setAuthCookie = (cookie: Cookie) => {
   // cookies().set(cookie.name, cookie.value, cookie.attributes); // <- suggested approach from the docs, but does not work with `next build` locally
-  cookies().set(cookie);
+  cookies().set(cookie)
 }
 
 const getErrorMessage = (errors: any): string => {
-  if (errors.email) return 'Invalid Email'
-  if (errors.password) return 'Invalid Password - ' + errors.password[0]
-  return '' // return a default error message or an empty string
+  if (errors.email) return "Invalid Email"
+  if (errors.password) return "Invalid Password - " + errors.password[0]
+  return "" // return a default error message or an empty string
 }
 
 export const validateAuthFormData = (
@@ -53,8 +61,8 @@ export const validateAuthFormData = (
 ):
   | { data: UsernameAndPassword; error: null }
   | { data: null; error: string } => {
-  const email = formData.get('email')
-  const password = formData.get('password')
+  const email = formData.get("email")
+  const password = formData.get("password")
   const result = authenticationSchema.safeParse({ email, password })
 
   if (!result.success) {
@@ -66,4 +74,3 @@ export const validateAuthFormData = (
 
   return { data: result.data, error: null }
 }
-

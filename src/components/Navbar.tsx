@@ -36,12 +36,11 @@ export default function Navbar() {
                 <div className='flex flex-col items-end'>
                   <h5 className='font-semibold text-sm'>{user?.name}</h5>
                   <p className='text-muted-foreground capitalize text-xs'>
-                    {/* {user?.role} */}
-                    {"Atmin"}
+                    {user?.role}
                   </p>
                 </div>
                 <Avatar>
-                  <AvatarImage src={user?.media.url} />
+                  {/* <AvatarImage src={user?.media.url} /> */}
                   <AvatarFallback>
                     {user?.name ? getInitials(user?.name) : "John Doe"}
                   </AvatarFallback>

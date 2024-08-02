@@ -15,7 +15,7 @@ function HomeNavbar() {
         <MountainIcon className='h-6 w-6' />
         <span className='sr-only'>Acme Inc</span>
       </Link>
-      {/* <nav className='ml-auto flex items-center gap-4'>
+      <nav className='ml-auto flex items-center gap-4'>
         {user?.role === "admin" ? (
           <Link
             className={buttonVariants({ variant: "secondary" })}
@@ -34,7 +34,7 @@ function HomeNavbar() {
         ) : (
           <SignOutBtn />
         )}
-      </nav> */}
+      </nav>
     </header>
   )
 }
