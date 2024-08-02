@@ -8,6 +8,13 @@
       "when": 1722595585051,
       "tag": "0000_smooth_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1722606181256,
+      "tag": "0001_giant_havok",
+      "breakpoints": true
     }
   ]
 }

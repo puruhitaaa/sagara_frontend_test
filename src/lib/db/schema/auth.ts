@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { pgTable, timestamp, text } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
+import { relations, sql } from "drizzle-orm"
+import { media } from "./media"
 
 export const users = pgTable("user", {
   id: text("id").primaryKey(),
@@ -8,7 +9,7 @@ export const users = pgTable("user", {
   hashedPassword: text("hashed_password").notNull(),
   name: text("name"),
   role: text("role").default("user"),
-  // mediaId: text("media_id").references(() => media.id),
+  mediaId: text("media_id").references(() => media.id),
   // instanceId: text("instance_id").references(() => instances.id),
   phoneNumber: text("phone_number").unique(),
   createdAt: timestamp("created_at")
@@ -19,12 +20,16 @@ export const users = pgTable("user", {
     .default(sql`now()`),
 })
 
-// export const usersRelations = relations(users, ({ one }) => ({
-//   instance: one(instances, {
-//     fields: [users.instanceId],
-//     references: [instances.id],
-//   }),
-// }))
+export const usersRelations = relations(users, ({ one }) => ({
+  // instance: one(instances, {
+  //   fields: [users.instanceId],
+  //   references: [instances.id],
+  // }),
+  media: one(media, {
+    fields: [users.mediaId],
+    references: [media.id],
+  }),
+}))
 
 export const sessions = pgTable("session", {
   id: text("id").primaryKey(),
