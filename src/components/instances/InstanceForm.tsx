@@ -1,8 +1,12 @@
-"use client";
+"use client"
 
-import { Instance, NewInstanceParams, insertInstanceParams } from "@/lib/db/schema/instances";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Instance,
+  NewInstanceParams,
+  insertInstanceParams,
+} from "@/lib/db/schema/instances"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 import {
   Form,
@@ -11,26 +15,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { trpc } from "@/lib/trpc/client";
-import { Button } from "@/components/ui/button";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { trpc } from "@/lib/trpc/client"
+import { Button } from "@/components/ui/button"
+import { z } from "zod"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const InstanceForm = ({
   instance,
   closeModal,
 }: {
-  instance?: Instance;
-  closeModal?: () => void;
+  instance?: Instance
+  closeModal?: () => void
 }) => {
-  
-  const editing = !!instance?.id;
+  const editing = !!instance?.id
 
-  const router = useRouter();
-  const utils = trpc.useUtils();
+  const router = useRouter()
+  const utils = trpc.useUtils()
 
   const form = useForm<z.infer<typeof insertInstanceParams>>({
     // latest Zod release has introduced a TS error with zodResolver
@@ -39,60 +42,62 @@ const InstanceForm = ({
     resolver: zodResolver(insertInstanceParams),
     defaultValues: instance ?? {
       name: "",
-     address: ""
+      address: "",
     },
-  });
+  })
 
-  const onSuccess = async (action: "create" | "update" | "delete",
-    data?: { error?: string },
+  const onSuccess = async (
+    action: "create" | "update" | "delete",
+    data?: { error?: string }
   ) => {
-        if (data?.error) {
+    if (data?.error) {
       toast.error(data.error)
-      return;
+      return
     }
 
-    await utils.instances.getInstances.invalidate();
-    router.refresh();
-    if (closeModal) closeModal();
-        toast.success(`Instance ${action}d!`);
-  };
+    await utils.instances.getInstances.invalidate()
+    router.refresh()
+    if (closeModal) closeModal()
+    toast.success(`Instance ${action}d!`)
+  }
 
   const { mutate: createInstance, isLoading: isCreating } =
     trpc.instances.createInstance.useMutation({
       onSuccess: (res) => onSuccess("create"),
-      onError: (err) => onError("create", { error: err.message }),
-    });
+      onError: (err) => onSuccess("create", { error: err.message }),
+    })
 
   const { mutate: updateInstance, isLoading: isUpdating } =
     trpc.instances.updateInstance.useMutation({
       onSuccess: (res) => onSuccess("update"),
-      onError: (err) => onError("update", { error: err.message }),
-    });
+      onError: (err) => onSuccess("update", { error: err.message }),
+    })
 
   const { mutate: deleteInstance, isLoading: isDeleting } =
     trpc.instances.deleteInstance.useMutation({
       onSuccess: (res) => onSuccess("delete"),
-      onError: (err) => onError("delete", { error: err.message }),
-    });
+      onError: (err) => onSuccess("delete", { error: err.message }),
+    })
 
   const handleSubmit = (values: NewInstanceParams) => {
     if (editing) {
-      updateInstance({ ...values, id: instance.id });
+      updateInstance({ ...values, id: instance.id })
     } else {
-      createInstance(values);
+      createInstance(values)
     }
-  };
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className={"space-y-8"}>
         <FormField
           control={form.control}
-          name="name"
-          render={({ field }) => (<FormItem>
+          name='name'
+          render={({ field }) => (
+            <FormItem>
               <FormLabel>Name</FormLabel>
-                <FormControl>
-            <Input {...field} />
-          </FormControl>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
 
               <FormMessage />
             </FormItem>
@@ -100,20 +105,21 @@ const InstanceForm = ({
         />
         <FormField
           control={form.control}
-          name="address"
-          render={({ field }) => (<FormItem>
+          name='address'
+          render={({ field }) => (
+            <FormItem>
               <FormLabel>Address</FormLabel>
-                <FormControl>
-            <Input {...field} />
-          </FormControl>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
         />
         <Button
-          type="submit"
-          className="mr-1"
+          type='submit'
+          className='mr-1'
           disabled={isCreating || isUpdating}
         >
           {editing
@@ -122,7 +128,7 @@ const InstanceForm = ({
         </Button>
         {editing ? (
           <Button
-            type="button"
+            type='button'
             variant={"destructive"}
             onClick={() => deleteInstance({ id: instance.id })}
           >
@@ -131,7 +137,7 @@ const InstanceForm = ({
         ) : null}
       </form>
     </Form>
-  );
-};
+  )
+}
 
-export default InstanceForm;
+export default InstanceForm

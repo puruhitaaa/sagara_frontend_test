@@ -37,6 +37,7 @@ const baseSchema = createSelectSchema(media).omit(timestamps)
 export const insertMediaSchema = createInsertSchema(media).omit(timestamps)
 export const insertMediaParams = baseSchema.extend({}).omit({
   id: true,
+  userId: true,
 })
 
 export const updateMediaSchema = baseSchema
