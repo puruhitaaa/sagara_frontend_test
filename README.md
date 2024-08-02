@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Frontend Project-based Test
 
-## Getting Started
+## Deskripsi
 
-First, run the development server:
+Anda diminta untuk melakukan slicing dan implementasi frontend berdasarkan desain Figma yang telah disediakan. Proyek ini merupakan implementasi frontend untuk sebuah aplikasi IT Certification.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Anda diminta untuk membuat halaman Dashboard dan Student. Untuk mempermudah, silakan membuat dummy data untuk student.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Spesifikasi
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Implementasikan semua halaman dan komponen sesuai dengan desain Figma yang diberikan.
+- Pastikan implementasi responsif dan dapat berfungsi dengan baik di berbagai ukuran layar.
+- Implementasikan penambahan student baru (image tidak perlu).
+- Implementasikan penghapusan student.
+- Implementasikan edit student.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Bonus
 
-## Learn More
+- Implementasikan search and filter student.
+- Implementasikan pagination.
+- Implementasikan sorting.
+- Implementasikan dark mode.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Dibebaskan untuk menggunakan tech stack apapun yang menurut Anda cocok untuk menyelesaikan tugas ini. Recommended stack: React.js, Tailwind CSS.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Resource
 
-## Deploy on Vercel
+Figma Design: [https://www.figma.com/design/6LOXL5aYDS4kTRlragRs8h/TEST2?node-id=0-1&t=kVEQOtl7Xua693Ez-1](https://www.figma.com/design/6LOXL5aYDS4kTRlragRs8h/TEST2?node-id=0-1&t=kVEQOtl7Xua693Ez-1)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deliverables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Silakan fork repository ini dan submit link repository hasil pengerjaan Anda ke [https://forms.gle/kAsjU8hFHyVNED2u6](https://forms.gle/kAsjU8hFHyVNED2u6).
