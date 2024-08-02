@@ -1,12 +1,12 @@
-import { computersRouter } from "./computers";
-import { router } from "@/lib/server/trpc";
-import { instancesRouter } from "./instances";
-import { mediaRouter } from "./media";
+import { router } from "@/lib/server/trpc"
+import { instancesRouter } from "./instances"
+import { mediaRouter } from "./media"
+import { usersRouter } from "./users"
 
 export const appRouter = router({
-  computers: computersRouter,
   instances: instancesRouter,
   media: mediaRouter,
-});
+  users: usersRouter,
+})
 
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter

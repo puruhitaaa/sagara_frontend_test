@@ -3,6 +3,9 @@ import { pgTable, timestamp, text } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { media } from "./media"
 import { instances } from "./instances"
+import { createInsertSchema, createSelectSchema } from "drizzle-zod"
+import { timestamps } from "@/lib/utils"
+import { getUsers } from "@/lib/api/users/queries"
 
 export const users = pgTable("user", {
   id: text("id").primaryKey(),
@@ -51,9 +54,26 @@ export const authenticationSchema = z.object({
     .max(15, { message: "cannot be more than 15 characters long" }),
 })
 
-export const updateUserSchema = z.object({
-  name: z.string().min(3).optional(),
-  email: z.string().min(4).optional(),
+export type UsernameAndPassword = z.infer<typeof authenticationSchema>
+
+// Schema for user - used to validate API requests
+const baseSchema = createSelectSchema(users).omit(timestamps)
+
+export const insertUserSchema = createInsertSchema(users).omit(timestamps)
+export const insertUserParams = baseSchema.extend({}).omit({
+  id: true,
 })
 
-export type UsernameAndPassword = z.infer<typeof authenticationSchema>
+export const updateUserSchema = baseSchema
+export const updateUserParams = baseSchema.extend({})
+export const userIdSchema = baseSchema.pick({ id: true })
+
+// Types for user - used to type API request params and within Components
+export type User = typeof users.$inferSelect
+export type NewUser = z.infer<typeof insertUserSchema>
+export type NewUserParams = z.infer<typeof insertUserParams>
+export type UpdateUserParams = z.infer<typeof updateUserParams>
+export type UserId = z.infer<typeof userIdSchema>
+
+// this type infers the return from getUsers() - meaning it will include any joins
+export type CompleteUser = Awaited<ReturnType<typeof getUsers>>["users"][number]

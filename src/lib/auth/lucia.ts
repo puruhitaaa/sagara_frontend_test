@@ -2,12 +2,8 @@ import { cookies } from "next/headers"
 import { cache } from "react"
 
 import { type Session, type User, Lucia } from "lucia"
-import { db } from "@/lib/db/index"
-
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle"
-import { sessions, users } from "../db/schema/auth"
-
-export const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users)
+import adapter from "../lucia/adapter"
+import type { Media } from "../db/schema/media"
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
@@ -22,6 +18,7 @@ export const lucia = new Lucia(adapter, {
       email: attributes.email,
       name: attributes.name,
       role: attributes.role,
+      media: attributes.media,
     }
   },
 })
@@ -37,6 +34,7 @@ interface DatabaseUserAttributes {
   email: string
   name: string
   role: "user" | "admin"
+  media: Media
 }
 
 export const validateRequest = cache(
