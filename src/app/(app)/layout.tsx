@@ -13,14 +13,14 @@ export default async function AppLayout({
   return (
     <main>
       <TrpcProvider cookies={cookies().toString()}>
-        <div className='flex h-screen'>
+        <div className='flex h-screen overflow-hidden'>
           <Sidebar />
-          <main className='w-full'>
+          <div className='w-full'>
             <Navbar />
-            <div className='flex-1 md:p-8 pt-2 p-8 overflow-y-auto'>
+            <div className='flex-1 md:p-8 pt-2 p-8 overflow-y-auto bg-brand-background h-full'>
               {children}
             </div>
-          </main>
+          </div>
         </div>
       </TrpcProvider>
 

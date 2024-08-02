@@ -1,4 +1,8 @@
-import { getUserById, getUsers } from "@/lib/api/users/queries"
+import {
+  getUserById,
+  getUserCountByRoleUser,
+  getUsers,
+} from "@/lib/api/users/queries"
 import { adminProcedure, router } from "@/lib/server/trpc"
 import {
   userIdSchema,
@@ -26,5 +30,8 @@ export const usersRouter = router({
     }),
   deleteUser: adminProcedure.input(userIdSchema).mutation(async ({ input }) => {
     return deleteUser({ id: input.id })
+  }),
+  getUserCountByRoleUser: adminProcedure.query(async () => {
+    return getUserCountByRoleUser()
   }),
 })

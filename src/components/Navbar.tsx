@@ -20,6 +20,7 @@ import { defaultLinks } from "@/config/nav"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { useSession } from "@/providers/session"
 import { getInitials } from "@/lib/utils"
+import SignOutBtn from "./auth/SignOutBtn"
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -27,12 +28,12 @@ export default function Navbar() {
   const { user } = useSession()
 
   return (
-    <div className='h-20 w-full bg-white px-5 md:px-10 flex items-center'>
+    <div className='h-20 w-full px-5 md:px-10 flex items-center'>
       <div className='w-fit ml-auto'>
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger className='bg-white inline-flex gap-[.938rem]'>
+              <NavigationMenuTrigger className='inline-flex gap-[.938rem]'>
                 <div className='flex flex-col items-end'>
                   <h5 className='font-semibold text-sm'>{user?.name}</h5>
                   <p className='text-muted-foreground capitalize text-xs'>
@@ -47,7 +48,8 @@ export default function Navbar() {
                 </Avatar>
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <NavigationMenuLink>Link</NavigationMenuLink>
+                <SignOutBtn />
+                {/* <NavigationMenuLink>Link</NavigationMenuLink> */}
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
