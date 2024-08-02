@@ -1,33 +1,31 @@
-import { SidebarLink } from "@/components/SidebarItems";
-import { Cog, Globe, User, HomeIcon } from "lucide-react";
+import { SidebarLink } from "@/components/SidebarItems"
+import { Building, GraduationCap, Image, LayoutGrid } from "lucide-react"
 
-type AdditionalLinks = {
-  title: string;
-  links: SidebarLink[];
-};
+type DefaultLinks = {
+  title: string
+  links: SidebarLink[]
+}
 
-export const defaultLinks: SidebarLink[] = [
-  { href: "/dashboard", title: "Home", icon: HomeIcon },
-  { href: "/account", title: "Account", icon: User },
-  { href: "/settings", title: "Settings", icon: Cog },
-];
-
-export const additionalLinks: AdditionalLinks[] = [
+export const defaultLinks: DefaultLinks[] = [
   {
-    title: "Entities",
+    title: "Menu",
     links: [
-      {
-        href: "/media",
-        title: "Media",
-        icon: Globe,
-      },
+      { href: "/dashboard", title: "Dashboard", icon: LayoutGrid },
       {
         href: "/instances",
         title: "Instances",
-        icon: Globe,
+        icon: Building,
+      },
+      {
+        href: "/media",
+        title: "Media",
+        icon: Image,
+      },
+      {
+        href: "/students",
+        title: "Students",
+        icon: GraduationCap,
       },
     ],
   },
-
-];
-
+]
