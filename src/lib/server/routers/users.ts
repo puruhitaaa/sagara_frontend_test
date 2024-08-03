@@ -3,7 +3,7 @@ import {
   getUserCountByRoleUser,
   getUsers,
 } from "@/lib/api/users/queries"
-import { adminProcedure, router } from "@/lib/server/trpc"
+import { publicProcedure, router } from "@/lib/server/trpc"
 import {
   userIdSchema,
   insertUserParams,
@@ -30,13 +30,13 @@ export const getUsersSchema = z.object({
 })
 
 export const usersRouter = router({
-  getUsers: adminProcedure.input(getUsersSchema).query(async ({ input }) => {
+  getUsers: publicProcedure.input(getUsersSchema).query(async ({ input }) => {
     return getUsers(input)
   }),
-  getUserById: adminProcedure.input(userIdSchema).query(async ({ input }) => {
+  getUserById: publicProcedure.input(userIdSchema).query(async ({ input }) => {
     return getUserById({ id: input.id })
   }),
-  createUser: adminProcedure
+  createUser: publicProcedure
     .input(newUserSchema)
     .mutation(async ({ input }) => {
       if (input.password !== input.confirmationPassword) {
@@ -44,15 +44,17 @@ export const usersRouter = router({
       }
       return createUser(input)
     }),
-  updateUser: adminProcedure
+  updateUser: publicProcedure
     .input(updateUserParams)
     .mutation(async ({ input }) => {
       return updateUser({ id: input.id }, input)
     }),
-  deleteUser: adminProcedure.input(userIdSchema).mutation(async ({ input }) => {
-    return deleteUser(input.id)
-  }),
-  getUserCountByRoleUser: adminProcedure.query(async () => {
+  deleteUser: publicProcedure
+    .input(userIdSchema)
+    .mutation(async ({ input }) => {
+      return deleteUser(input.id)
+    }),
+  getUserCountByRoleUser: publicProcedure.query(async () => {
     return getUserCountByRoleUser()
   }),
 })

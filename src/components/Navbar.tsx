@@ -35,9 +35,11 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuTrigger className='inline-flex gap-[.938rem]'>
                 <div className='flex flex-col items-end'>
-                  <h5 className='font-semibold text-sm'>{user?.name}</h5>
+                  <h5 className='font-semibold text-sm'>
+                    {user?.name ?? "John Doe"}
+                  </h5>
                   <p className='text-muted-foreground capitalize text-xs'>
-                    {user?.role}
+                    {user?.role ?? "Admin"}
                   </p>
                 </div>
                 <Avatar>

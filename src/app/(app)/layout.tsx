@@ -1,4 +1,3 @@
-import { checkAuth } from "@/lib/auth/utils"
 import { Toaster } from "@/components/ui/sonner"
 import Navbar from "@/components/Navbar"
 import Sidebar from "@/components/Sidebar"
@@ -9,8 +8,6 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  // await withAuthRole("admin")
-  await checkAuth()
   return (
     <main>
       <TrpcProvider cookies={cookies().toString()}>

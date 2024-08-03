@@ -111,9 +111,7 @@ export default function StudentList() {
       </div>
 
       {!loadingUsers && data?.users ? (
-        data.users.length === 0 ? (
-          <EmptyState openModal={openModal} />
-        ) : (
+        data.users.length === 0 ? null : (
           <div className='border overflow-x-auto'>
             <Table>
               <TableHeader className='bg-brand-background dark:bg-background'>
@@ -257,23 +255,5 @@ const Student = ({
         <StudentModal student={student} />
       </TableCell>
     </TableRow>
-  )
-}
-
-const EmptyState = ({ openModal }: { openModal: TOpenModal }) => {
-  return (
-    <div className='text-center'>
-      <h3 className='mt-2 text-sm font-semibold text-secondary-foreground'>
-        No student
-      </h3>
-      <p className='mt-1 text-sm text-muted-foreground'>
-        Get started by creating a new student.
-      </p>
-      <div className='mt-6'>
-        <Button onClick={() => openModal()}>
-          <PlusIcon className='h-4' /> New Student{" "}
-        </Button>
-      </div>
-    </div>
   )
 }

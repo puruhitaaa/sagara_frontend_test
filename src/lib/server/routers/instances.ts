@@ -1,5 +1,5 @@
 import { getInstanceById, getInstances } from "@/lib/api/instances/queries"
-import { adminProcedure, router } from "@/lib/server/trpc"
+import { publicProcedure, router } from "@/lib/server/trpc"
 import {
   instanceIdSchema,
   insertInstanceParams,
@@ -12,25 +12,25 @@ import {
 } from "@/lib/api/instances/mutations"
 
 export const instancesRouter = router({
-  getInstances: adminProcedure.query(async () => {
+  getInstances: publicProcedure.query(async () => {
     return getInstances()
   }),
-  getInstanceById: adminProcedure
+  getInstanceById: publicProcedure
     .input(instanceIdSchema)
     .query(async ({ input }) => {
       return getInstanceById(input.id)
     }),
-  createInstance: adminProcedure
+  createInstance: publicProcedure
     .input(insertInstanceParams)
     .mutation(async ({ input }) => {
       return createInstance(input)
     }),
-  updateInstance: adminProcedure
+  updateInstance: publicProcedure
     .input(updateInstanceParams)
     .mutation(async ({ input }) => {
       return updateInstance(input.id, input)
     }),
-  deleteInstance: adminProcedure
+  deleteInstance: publicProcedure
     .input(instanceIdSchema)
     .mutation(async ({ input }) => {
       return deleteInstance(input.id)
