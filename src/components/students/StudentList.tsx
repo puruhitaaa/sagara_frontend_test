@@ -148,6 +148,7 @@ export default function StudentList() {
                 </Button>
                 {Array.from({ length: data.totalPages }).map((_, i) => (
                   <Button
+                    key={i}
                     variant='ghost'
                     size='sm'
                     className='rounded-md text-muted-foreground'

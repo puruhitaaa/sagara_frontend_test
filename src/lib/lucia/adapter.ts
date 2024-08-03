@@ -25,9 +25,9 @@ function transformIntoDatabaseUser(
   const { id, media, ...attributes } = raw
   return {
     id,
+    // @ts-ignore
     attributes: {
       ...attributes,
-      // @ts-ignore
       media,
     },
   }
