@@ -14,7 +14,7 @@ function TimelinePicker() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='outline' className='ml-auto'>
+        <Button variant='outline' className='ml-auto w-full md:w-fit'>
           Daily{" "}
           <ChevronDownIcon className='ml-2 h-4 w-4 text-muted-foreground' />
         </Button>

@@ -47,7 +47,7 @@ function SortButton({ title }: { title: string }) {
 
   return (
     <Button
-      className='inline-flex gap-2'
+      className='inline-flex gap-2 hover:bg-background'
       onClick={handleSortClick}
       type='button'
       variant={"ghost"}

@@ -3,7 +3,7 @@
 
 import { User, CompleteUser } from "@/lib/db/schema/auth"
 import { useState } from "react"
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react"
+import { MoreHorizontal, PlusIcon, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -13,19 +13,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { getInitials } from "@/lib/utils"
+import { cn, getInitials } from "@/lib/utils"
 import { trpc } from "@/lib/trpc/client"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import SortButton from "./SortButton"
+import FilterButton from "./FilterButton"
+import AddButton from "./AddButton"
+import { Input } from "../ui/input"
+import SettingButton from "./SettingButton"
+import useSearch from "@/lib/hooks/useSearch"
 
 type TOpenModal = (student?: User) => void
 
@@ -37,6 +33,9 @@ export default function StudentList() {
   } = trpc.users.getUsers.useQuery(undefined, { refetchOnWindowFocus: false })
   const [open, setOpen] = useState(false)
   const [activeStudent, setActiveStudent] = useState<User | null>(null)
+  const [isInputFocused, setIsInputFocused] = useState(false)
+  const { getParam } = useSearch()
+  const [page, setPage] = useState(getParam("page") ?? 1)
 
   const openModal = (student?: User) => {
     setOpen(true)
@@ -45,7 +44,34 @@ export default function StudentList() {
   const closeModal = () => setOpen(false)
 
   return (
-    <div className='overflow-x-hidden'>
+    <div className='overflow-x-hidden flex flex-col gap-4 py-2'>
+      <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
+        <div className='flex items-center gap-3'>
+          <FilterButton />
+          <AddButton />
+        </div>
+
+        <div className='flex items-center gap-3'>
+          <div
+            className={cn(
+              "rounded-md bg-background inline-flex items-center gap-1 min-w-80 border border-border",
+              { "bg-brand-background": isInputFocused }
+            )}
+          >
+            <Button className='ml-1' variant='ghost' size='sm'>
+              <Search className='h-4 w-4' />
+            </Button>
+            <Input
+              className='bg-transparent focus-visible:ring-offset-0 focus-visible:ring-0 border-none'
+              placeholder='Search'
+              onFocus={() => void setIsInputFocused(true)}
+              onBlur={() => void setIsInputFocused(false)}
+            />
+          </div>
+
+          <SettingButton />
+        </div>
+      </div>
       {/* <Modal
         open={open}
         setOpen={setOpen}
@@ -57,19 +83,14 @@ export default function StudentList() {
           openModal={openModal}
           closeModal={closeModal}
         />
-      </Modal>
-      <div className='absolute right-0 top-0 '>
-        <Button onClick={() => openModal()} variant={"outline"}>
-          +
-        </Button>
-      </div> */}
+      </Modal> */}
       {!loadingUsers && users ? (
         users.length === 0 ? (
           <EmptyState openModal={openModal} />
         ) : (
           <div className='border overflow-x-auto'>
             <Table>
-              <TableHeader>
+              <TableHeader className='bg-brand-background dark:bg-background'>
                 <TableRow>
                   <TableHead>
                     <SortButton title='Profile' />
@@ -94,58 +115,79 @@ export default function StudentList() {
                 ))}
               </TableBody>
             </Table>
-            <nav className='flex items-center justify-between px-4 py-3'>
-              <Button variant='ghost' size='sm' className='rounded-md'>
-                <ChevronLeftIcon className='h-4 w-4' />
+            <nav className='flex items-center justify-between px-4 py-3 bg-background'>
+              <Button variant='outline' size='sm' className='rounded-md'>
                 Previous
               </Button>
               <div className='flex items-center gap-2'>
-                <Button variant='ghost' size='sm' className='rounded-md'>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='rounded-md text-muted-foreground'
+                >
+                  <MoreHorizontal className='h-5 w-5' />
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
                   1
                 </Button>
-                <Button variant='ghost' size='sm' className='rounded-md'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
                   2
                 </Button>
-                <Button variant='ghost' size='sm' className='rounded-md'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
                   3
                 </Button>
-                <Button variant='ghost' size='sm' className='rounded-md'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
                   4
                 </Button>
-                <Button variant='ghost' size='sm' className='rounded-md'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
                   5
                 </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
+                  6
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='rounded-md text-muted-foreground'
+                >
+                  7
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='rounded-md text-muted-foreground'
+                >
+                  <MoreHorizontal className='h-5 w-5' />
+                </Button>
               </div>
-              <Button variant='ghost' size='sm' className='rounded-md'>
+              <Button variant='outline' size='sm' className='rounded-md'>
                 Next
-                <ChevronRightIcon className='h-4 w-4' />
               </Button>
             </nav>
-            {/* <Button variant='ghost' size='sm' className='rounded-md'>
-                <ChevronLeftIcon className='h-4 w-4' />
-                Previous
-              </Button>
-              <div className='flex items-center gap-2'>
-                <Button variant='outline' size='sm' className='rounded-md'>
-                  1
-                </Button>
-                <Button variant='outline' size='sm' className='rounded-md'>
-                  2
-                </Button>
-                <Button variant='outline' size='sm' className='rounded-md'>
-                  3
-                </Button>
-                <Button variant='outline' size='sm' className='rounded-md'>
-                  4
-                </Button>
-                <Button variant='outline' size='sm' className='rounded-md'>
-                  5
-                </Button>
-              </div>
-              <Button variant='ghost' size='sm' className='rounded-md'>
-                Next
-                <ChevronRightIcon className='h-4 w-4' />
-              </Button> */}
           </div>
         )
       ) : null}
