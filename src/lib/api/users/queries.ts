@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/index"
-import { and, asc, count, eq, gte, lt, sql } from "drizzle-orm"
+import { and, asc, count, desc, eq, gte, lt, sql } from "drizzle-orm"
 import { type UserId, userIdSchema, users } from "@/lib/db/schema/auth"
 import { media } from "@/lib/db/schema/media"
 import { instances } from "@/lib/db/schema/instances"
@@ -11,7 +11,8 @@ export const getUsers = async ({
   page,
   limit,
   activeColumns = [],
-}: z.infer<typeof getUsersSchema>) => {
+}: // searchParams,
+z.infer<typeof getUsersSchema>) => {
   const offset = (page! - 1) * 6
 
   const [totalCount] = await db.select({ count: count() }).from(users)
@@ -40,7 +41,24 @@ export const getUsers = async ({
     .from(users)
     .offset(offset)
     .limit(limit!)
-    .orderBy(asc(users.id))
+    .orderBy(
+      desc(users.createdAt)
+      // searchParams?.name && searchParams.name === "asc"
+      //   ? asc(users.name)
+      //   : desc(users.name),
+      // searchParams?.email && searchParams.email === "asc"
+      //   ? asc(users.email)
+      //   : desc(users.email),
+      // searchParams?.phoneNumber && searchParams.phoneNumber === "asc"
+      //   ? asc(users.phoneNumber)
+      //   : desc(users.phoneNumber),
+      // searchParams?.instance && searchParams.instance === "asc"
+      //   ? asc(instances.name)
+      //   : desc(instances.name),
+      // searchParams?.createdAt && searchParams.createdAt === "asc"
+      //   ? asc(users.createdAt)
+      //   : desc(users.createdAt)
+    )
     .leftJoin(media, eq(users.mediaId, media.id))
     .leftJoin(instances, eq(users.instanceId, instances.id))
     .where(eq(users.role, "user"))

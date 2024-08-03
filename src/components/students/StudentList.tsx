@@ -3,8 +3,8 @@
 
 import { User, CompleteUser } from "@/lib/db/schema/auth"
 import { useState } from "react"
-import { MoreHorizontal, PlusIcon, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { MoreHorizontal, PlusIcon, Search, Trash } from "lucide-react"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -18,11 +18,24 @@ import { trpc } from "@/lib/trpc/client"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import SortButton from "./SortButton"
 import FilterButton from "./FilterButton"
-import AddButton from "./AddButton"
 import { Input } from "../ui/input"
 import SettingButton from "./SettingButton"
 import useSearch from "@/lib/hooks/useSearch"
 import { useTableStore } from "@/store/table"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import StudentModal from "./StudentModal"
+import { Skeleton } from "../ui/skeleton"
 
 type TOpenModal = (student?: User) => void
 
@@ -44,8 +57,19 @@ export default function StudentList() {
   } = trpc.users.getUsers.useQuery(
     {
       limit: 6,
-      page: getParam("page") ?? 1,
+      page: getParam("page")
+        ? parseInt(getParam("page")!) < 1
+          ? 1
+          : getParam("page")
+        : 1,
       activeColumns,
+      // searchParams: {
+      //   name: getParam("name") ?? null,
+      //   email: getParam("email") ?? null,
+      //   phoneNumber: getParam("phoneNumber") ?? null,
+      //   instance: getParam("instance") ?? null,
+      //   createdAt: getParam("createdAt") ?? null,
+      // },
     },
     { refetchOnWindowFocus: false }
   )
@@ -58,17 +82,17 @@ export default function StudentList() {
 
   return (
     <div className='overflow-x-hidden flex flex-col gap-4 py-2'>
-      <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
-        <div className='flex items-center gap-3'>
+      <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
+        <div className='flex flex-col md:flex-row md:items-center gap-3 w-full'>
           <FilterButton />
-          <AddButton />
+          <StudentModal />
         </div>
 
         <div className='flex items-center gap-3'>
           <div
             className={cn(
               "rounded-md bg-background inline-flex items-center gap-1 min-w-80 border border-border",
-              { "bg-brand-background": isInputFocused }
+              { "bg-brand-background dark:bg-black/50": isInputFocused }
             )}
           >
             <Button className='ml-1' variant='ghost' size='sm'>
@@ -85,18 +109,7 @@ export default function StudentList() {
           <SettingButton />
         </div>
       </div>
-      {/* <Modal
-        open={open}
-        setOpen={setOpen}
-        title={activeStudent ? "Edit Student" : "Create Student"}
-      >
-        <StudentForm
-          student={activeStudent}
-          addOptimistic={addOptimisticStudent}
-          openModal={openModal}
-          closeModal={closeModal}
-        />
-      </Modal> */}
+
       {!loadingUsers && data?.users ? (
         data.users.length === 0 ? (
           <EmptyState openModal={openModal} />
@@ -112,6 +125,7 @@ export default function StudentList() {
                         <SortButton title={col.title} />
                       </TableHead>
                     ))}
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className='last:border-b border-border'>
@@ -132,55 +146,15 @@ export default function StudentList() {
                 >
                   <MoreHorizontal className='h-5 w-5' />
                 </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  1
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  2
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  3
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  4
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  5
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  6
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='rounded-md text-muted-foreground'
-                >
-                  7
-                </Button>
+                {Array.from({ length: data.totalPages }).map((_, i) => (
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='rounded-md text-muted-foreground'
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
                 <Button
                   variant='ghost'
                   size='icon'
@@ -195,7 +169,9 @@ export default function StudentList() {
             </nav>
           </div>
         )
-      ) : null}
+      ) : (
+        <Skeleton className='h-96 w-full bg-muted-foreground' />
+      )}
     </div>
   )
 }
@@ -208,6 +184,23 @@ const Student = ({
   openModal: TOpenModal
 }) => {
   const tableCols = useTableStore((state) => state.tableCols)
+  const utils = trpc.useUtils()
+  const { mutate: deleteUser } = trpc.users.deleteUser.useMutation()
+
+  const handleDeleteUser = (id: string) => {
+    deleteUser(
+      { id },
+      {
+        onSuccess: async () => {
+          toast.success("User deleted successfully!")
+          await utils.users.getUsers.invalidate()
+        },
+        onError: (error) => {
+          toast.error(error.message)
+        },
+      }
+    )
+  }
 
   return (
     <TableRow>
@@ -234,6 +227,34 @@ const Student = ({
               : null}
           </TableCell>
         ))}
+      <TableCell className='flex items-center gap-3'>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant='ghost' size='icon'>
+              <Trash className='h-4 w-4 text-red-500' />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                selected user data!
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                className={buttonVariants({ variant: "destructive" })}
+                onClick={() => void handleDeleteUser(student.id)}
+              >
+                Continue
+              </AlertDialogAction>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <StudentModal student={student} />
+      </TableCell>
     </TableRow>
   )
 }

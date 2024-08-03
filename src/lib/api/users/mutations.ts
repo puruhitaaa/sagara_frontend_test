@@ -2,20 +2,30 @@ import { db } from "@/lib/db/index"
 import { eq } from "drizzle-orm"
 import {
   UserId,
-  NewUserParams,
   UpdateUserParams,
   updateUserSchema,
-  insertUserSchema,
   users,
   userIdSchema,
+  newUserSchema,
 } from "@/lib/db/schema/auth"
+import { Argon2id } from "oslo/password"
+import { generateId } from "lucia"
+import { z } from "zod"
 
-export const createUser = async (user: NewUserParams) => {
-  const newUser = insertUserSchema.parse({
+export const createUser = async (user: z.infer<typeof newUserSchema>) => {
+  const newUser = newUserSchema.parse({
     ...user,
   })
+  const { confirmationPassword, password, ...rest } = newUser
+
+  const hashedPassword = await new Argon2id().hash(password)
+  const userId = generateId(15)
+
   try {
-    const [u] = await db.insert(users).values(newUser).returning()
+    const [u] = await db
+      .insert(users)
+      .values({ ...rest, id: userId, hashedPassword })
+      .returning()
     return { user: u }
   } catch (err) {
     const message = (err as Error).message ?? "Error, please try again"
@@ -43,7 +53,7 @@ export const updateUser = async (id: UserId, user: UpdateUserParams) => {
   }
 }
 
-export const deleteUser = async (id: UserId) => {
+export const deleteUser = async (id: UserId["id"]) => {
   const { id: userId } = userIdSchema.parse({ id })
   try {
     const [u] = await db.delete(users).where(eq(users.id, userId!)).returning()

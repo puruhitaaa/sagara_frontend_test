@@ -13,7 +13,7 @@ function FilterButton() {
       <PopoverTrigger asChild>
         <Button
           variant='outline'
-          className='w-full inline-flex gap-2 items-center'
+          className='w-fit inline-flex gap-2 items-center'
         >
           <ListFilter className='h-4 w-4' />
           Filter

@@ -18,13 +18,6 @@ export default function SettingButton() {
     checkedState: CheckedState,
     columnId: number
   ) => {
-    console.log(typeof checkedState)
-    console.log(tableCols)
-    // setTableCols((prev) =>
-    //   prev.map((col) =>
-    //     col.id === columnId ? { ...col, isActive: !checkedState } : col
-    //   )
-    // )
     setIsActive(columnId)
   }
 
@@ -42,7 +35,7 @@ export default function SettingButton() {
           {tableCols.map((column) => (
             <div className='flex items-center gap-3' key={column.id}>
               <Checkbox
-                className='border-green-700 bg-transparent data-[state=checked]:bg-green-200 data-[state=checked]:text-inherit text-green-700'
+                className='border-green-700 bg-transparent data-[state=checked]:bg-green-200 data-[state=checked]:text-inherit dark:data-[state=checked]:text-background text-green-700'
                 checked={column.isActive}
                 onCheckedChange={(e) => void handleCheckboxChange(e, column.id)}
               />

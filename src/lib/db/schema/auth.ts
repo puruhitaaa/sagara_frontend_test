@@ -64,6 +64,17 @@ export const insertUserParams = baseSchema.extend({}).omit({
   id: true,
 })
 
+export const newUserSchema = insertUserSchema
+  .omit({ id: true, hashedPassword: true })
+  .extend({
+    password: z.string().min(6).max(32),
+    confirmationPassword: z.string().min(6).max(32),
+  })
+  .refine((data) => data.password === data.confirmationPassword, {
+    message: "Passwords don't match",
+    path: ["confirmationPassword"],
+  })
+
 export const updateUserSchema = baseSchema
 export const updateUserParams = baseSchema.extend({})
 export const userIdSchema = baseSchema.pick({ id: true })
