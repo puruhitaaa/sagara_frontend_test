@@ -1,6 +1,7 @@
 import { customAlphabet } from "nanoid"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { users } from "./db/schema/auth"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -20,4 +21,18 @@ export const getInitials = (name: string) => {
     .join("")
     .substring(0, 2)
   return initials.toUpperCase()
+}
+
+type UserColumns = keyof typeof users._.columns
+
+const specificKeys: UserColumns[] = [
+  "name",
+  "email",
+  "phoneNumber",
+  "instanceId",
+  "createdAt",
+]
+
+export const getUserColumns = (): UserColumns[] => {
+  return specificKeys
 }

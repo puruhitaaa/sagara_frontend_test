@@ -22,20 +22,33 @@ import AddButton from "./AddButton"
 import { Input } from "../ui/input"
 import SettingButton from "./SettingButton"
 import useSearch from "@/lib/hooks/useSearch"
+import { useTableStore } from "@/store/table"
 
 type TOpenModal = (student?: User) => void
 
 export default function StudentList() {
-  const {
-    data: users,
-    isLoading: loadingUsers,
-    error: errorUsers,
-  } = trpc.users.getUsers.useQuery(undefined, { refetchOnWindowFocus: false })
   const [open, setOpen] = useState(false)
   const [activeStudent, setActiveStudent] = useState<User | null>(null)
   const [isInputFocused, setIsInputFocused] = useState(false)
   const { getParam } = useSearch()
-  const [page, setPage] = useState(getParam("page") ?? 1)
+  const tableCols = useTableStore((state) => state.tableCols)
+
+  const activeColumns = tableCols
+    .filter((col) => col.isActive)
+    .map((col) => col.title.toLowerCase().replace(/ /g, ""))
+
+  const {
+    data,
+    isLoading: loadingUsers,
+    // error: errorUsers,
+  } = trpc.users.getUsers.useQuery(
+    {
+      limit: 6,
+      page: getParam("page") ?? 1,
+      activeColumns,
+    },
+    { refetchOnWindowFocus: false }
+  )
 
   const openModal = (student?: User) => {
     setOpen(true)
@@ -84,33 +97,25 @@ export default function StudentList() {
           closeModal={closeModal}
         />
       </Modal> */}
-      {!loadingUsers && users ? (
-        users.length === 0 ? (
+      {!loadingUsers && data?.users ? (
+        data.users.length === 0 ? (
           <EmptyState openModal={openModal} />
         ) : (
           <div className='border overflow-x-auto'>
             <Table>
               <TableHeader className='bg-brand-background dark:bg-background'>
                 <TableRow>
-                  <TableHead>
-                    <SortButton title='Profile' />
-                  </TableHead>
-                  <TableHead>
-                    <SortButton title='Email Address' />
-                  </TableHead>
-                  <TableHead>
-                    <SortButton title='Phone Number' />
-                  </TableHead>
-                  <TableHead>
-                    <SortButton title='Instance' />
-                  </TableHead>
-                  <TableHead>
-                    <SortButton title='Created At' />
-                  </TableHead>
+                  {tableCols
+                    .filter((col) => col.isActive)
+                    .map((col) => (
+                      <TableHead key={String(col.id)}>
+                        <SortButton title={col.title} />
+                      </TableHead>
+                    ))}
                 </TableRow>
               </TableHeader>
               <TableBody className='last:border-b border-border'>
-                {users.map((user) => (
+                {data.users.map((user) => (
                   <Student student={user} key={user.id} openModal={openModal} />
                 ))}
               </TableBody>
@@ -202,28 +207,33 @@ const Student = ({
   student: CompleteUser
   openModal: TOpenModal
 }) => {
+  const tableCols = useTableStore((state) => state.tableCols)
+
   return (
     <TableRow>
-      <TableCell className='font-medium inline-flex items-center gap-6'>
-        <Avatar>
-          <AvatarImage src={student.media?.url} />
-          <AvatarFallback>
-            {student?.name ? getInitials(student?.name) : "John Doe"}
-          </AvatarFallback>
-        </Avatar>
-        {student.name ?? "John Doe"}
-      </TableCell>
-      <TableCell>{student.email}</TableCell>
-      <TableCell>{student.phoneNumber}</TableCell>
-      <TableCell>{student.instance?.name}</TableCell>
-      <TableCell>
-        {student.createdAt.toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </TableCell>
+      {tableCols
+        .filter((col) => col.isActive) // Only include active columns
+        .map((col) => (
+          <TableCell key={col.id}>
+            {col.title === "Profile" && (
+              <div className='font-medium inline-flex items-center gap-6'>
+                <Avatar>
+                  <AvatarImage src={student.media?.url ?? ""} />
+                  <AvatarFallback>
+                    {student?.name ? getInitials(student?.name) : "John Doe"}
+                  </AvatarFallback>
+                </Avatar>
+                {student.name ?? "John Doe"}
+              </div>
+            )}
+            {col.title === "Email Address" ? student.email : null}
+            {col.title === "Phone Number" ? student.phoneNumber : null}
+            {col.title === "Instance" ? student.instance.name : null}
+            {col.title === "Created At"
+              ? student.createdAt?.toLocaleDateString()
+              : null}
+          </TableCell>
+        ))}
     </TableRow>
   )
 }

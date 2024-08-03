@@ -10,10 +10,17 @@ import {
   updateUserParams,
 } from "@/lib/db/schema/auth"
 import { createUser, deleteUser, updateUser } from "@/lib/api/users/mutations"
+import { z } from "zod"
+
+export const getUsersSchema = z.object({
+  page: z.number().min(1).catch(1).nullish(),
+  limit: z.number().min(1).max(6).catch(6).nullish(),
+  activeColumns: z.array(z.string()).optional(),
+})
 
 export const usersRouter = router({
-  getUsers: adminProcedure.query(async () => {
-    return getUsers()
+  getUsers: adminProcedure.input(getUsersSchema).query(async ({ input }) => {
+    return getUsers(input)
   }),
   getUserById: adminProcedure.input(userIdSchema).query(async ({ input }) => {
     return getUserById({ id: input.id })
