@@ -88,7 +88,7 @@ export default function StudentList() {
           <StudentModal />
         </div>
 
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-3 justify-between md:justify-normal'>
           <div
             className={cn(
               "rounded-md bg-background inline-flex items-center gap-1 min-w-80 border border-border",
@@ -112,7 +112,7 @@ export default function StudentList() {
 
       {!loadingUsers && data?.users ? (
         data.users.length === 0 ? null : (
-          <div className='border overflow-x-auto'>
+          <div className='border'>
             <Table>
               <TableHeader className='bg-brand-background dark:bg-background'>
                 <TableRow>

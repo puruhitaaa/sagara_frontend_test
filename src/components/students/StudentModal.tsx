@@ -10,7 +10,6 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "../ui/dialog"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -22,7 +21,7 @@ import {
 import { Pencil, Plus } from "lucide-react"
 import { RouterOutput, trpc } from "@/lib/trpc/client"
 import { useForm } from "react-hook-form"
-import { insertUserSchema, newUserSchema } from "@/lib/db/schema/auth"
+import { newUserSchema } from "@/lib/db/schema/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import {
@@ -61,15 +60,24 @@ export default function StudentModal({
   const { data: instancesData, isLoading: loadingInstances } =
     trpc.instances.getInstances.useQuery()
   const { mutate: createUser } = trpc.users.createUser.useMutation()
-  // const {} = trpc.users.updateUser.useMutation({
-  //   onSuccess: () => {
-  //     closeModal()
-  //   },
-  // })
+  const { mutate: updateUser } = trpc.users.updateUser.useMutation()
 
   function onSubmit(data: z.infer<typeof newUserSchema>) {
     if (editing) {
-      // updateUser({ id: student.id }, data)
+      updateUser(
+        { ...data, id: student.id },
+        {
+          onSuccess: async () => {
+            closeModal()
+            toast.success("User updated successfully!")
+            form.reset()
+            await utils.users.getUsers.invalidate()
+          },
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        }
+      )
     } else {
       createUser(data, {
         onSuccess: async () => {
@@ -89,7 +97,7 @@ export default function StudentModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {!editing ? (
-          <Button className='w-fit inline-flex gap-2 items-center dark:text-foreground bg-brand-red hover:bg-brand-red/80 text-background'>
+          <Button className='md:w-fit w-full inline-flex gap-2 items-center dark:text-foreground bg-brand-red hover:bg-brand-red/80 text-background'>
             <Plus className='h-4 w-4' />
             Add Student
           </Button>

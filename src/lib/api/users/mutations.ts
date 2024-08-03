@@ -2,11 +2,10 @@ import { db } from "@/lib/db/index"
 import { eq } from "drizzle-orm"
 import {
   UserId,
-  UpdateUserParams,
-  updateUserSchema,
   users,
   userIdSchema,
   newUserSchema,
+  newUpdateUserSchema,
 } from "@/lib/db/schema/auth"
 import { Argon2id } from "oslo/password"
 import { generateId } from "lucia"
@@ -34,15 +33,19 @@ export const createUser = async (user: z.infer<typeof newUserSchema>) => {
   }
 }
 
-export const updateUser = async (id: UserId, user: UpdateUserParams) => {
-  const { id: userId } = userIdSchema.parse({ id })
-  const newUser = updateUserSchema.parse({
+export const updateUser = async (user: z.infer<typeof newUpdateUserSchema>) => {
+  const { id: userId } = userIdSchema.parse({ id: user.id })
+  const newUser = newUpdateUserSchema.parse({
     ...user,
   })
+  const { confirmationPassword, password, ...rest } = newUser
+
+  const hashedPassword = await new Argon2id().hash(password)
+
   try {
     const [u] = await db
       .update(users)
-      .set({ ...newUser, updatedAt: new Date() })
+      .set({ ...rest, hashedPassword, updatedAt: new Date() })
       .where(eq(users.id, userId!))
       .returning()
     return { user: u }

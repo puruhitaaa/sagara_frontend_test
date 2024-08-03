@@ -9,6 +9,7 @@ import {
   insertUserParams,
   updateUserParams,
   newUserSchema,
+  newUpdateUserSchema,
 } from "@/lib/db/schema/auth"
 import { createUser, deleteUser, updateUser } from "@/lib/api/users/mutations"
 import { z } from "zod"
@@ -45,9 +46,9 @@ export const usersRouter = router({
       return createUser(input)
     }),
   updateUser: publicProcedure
-    .input(updateUserParams)
+    .input(newUpdateUserSchema)
     .mutation(async ({ input }) => {
-      return updateUser({ id: input.id }, input)
+      return updateUser(input)
     }),
   deleteUser: publicProcedure
     .input(userIdSchema)
