@@ -1,3 +1,6 @@
+# Note
+Kunjungi https://sagara-frontend-test.vercel.app/dashboard untuk melihat dashboard tersebut
+
 # Frontend Project-based Test
 
 ## Deskripsi
