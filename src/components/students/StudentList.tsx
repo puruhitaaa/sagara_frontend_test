@@ -39,37 +39,28 @@ import { Skeleton } from "../ui/skeleton"
 
 type TOpenModal = (student?: User) => void
 
+const basePage = 1
+
 export default function StudentList() {
   const [open, setOpen] = useState(false)
   const [activeStudent, setActiveStudent] = useState<User | null>(null)
   const [isInputFocused, setIsInputFocused] = useState(false)
-  const { getParam } = useSearch()
+  const { setParam, getParam } = useSearch()
   const tableCols = useTableStore((state) => state.tableCols)
 
   const activeColumns = tableCols
     .filter((col) => col.isActive)
     .map((col) => col.title.toLowerCase().replace(/ /g, ""))
 
-  const {
-    data,
-    isLoading: loadingUsers,
-    // error: errorUsers,
-  } = trpc.users.getUsers.useQuery(
+  const { data, isLoading: loadingUsers } = trpc.users.getUsers.useQuery(
     {
       limit: 6,
       page: getParam("page")
         ? parseInt(getParam("page")!) < 1
-          ? 1
-          : getParam("page")
-        : 1,
+          ? basePage
+          : parseInt(getParam("page")!)
+        : basePage,
       activeColumns,
-      // searchParams: {
-      //   name: getParam("name") ?? null,
-      //   email: getParam("email") ?? null,
-      //   phoneNumber: getParam("phoneNumber") ?? null,
-      //   instance: getParam("instance") ?? null,
-      //   createdAt: getParam("createdAt") ?? null,
-      // },
     },
     { refetchOnWindowFocus: false }
   )
@@ -79,6 +70,14 @@ export default function StudentList() {
     student ? setActiveStudent(student) : setActiveStudent(null)
   }
   const closeModal = () => setOpen(false)
+
+  const handleClickPrevious = () => {
+    setParam("page", (parseInt(getParam("page")! ?? 1) - 1).toString())
+  }
+
+  const handleClickNext = () => {
+    setParam("page", (parseInt(getParam("page")! ?? 1) + 1).toString())
+  }
 
   return (
     <div className='overflow-x-hidden flex flex-col gap-4 py-2'>
@@ -133,9 +132,16 @@ export default function StudentList() {
               </TableBody>
             </Table>
             <nav className='flex items-center justify-between px-4 py-3 bg-background'>
-              <Button variant='outline' size='sm' className='rounded-md'>
+              <Button
+                variant='outline'
+                size='sm'
+                className='rounded-md'
+                onClick={handleClickPrevious}
+                disabled={!getParam("page") || getParam("page") === "1"}
+              >
                 Previous
               </Button>
+
               <div className='flex items-center gap-2'>
                 <Button
                   variant='ghost'
@@ -162,7 +168,14 @@ export default function StudentList() {
                   <MoreHorizontal className='h-5 w-5' />
                 </Button>
               </div>
-              <Button variant='outline' size='sm' className='rounded-md'>
+
+              <Button
+                variant='outline'
+                size='sm'
+                className='rounded-md'
+                onClick={handleClickNext}
+                disabled={getParam("page") === String(data.totalPages)}
+              >
                 Next
               </Button>
             </nav>
